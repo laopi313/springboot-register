@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -247,15 +246,17 @@ public class RegisterController {
                 BufferedWriter writer = Files.newBufferedWriter(Paths.get(fileName));
 
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                        .withHeader("ID", "Date", "Name", "PaymentType", "Course", "Memo"));
+                        .withHeader("ID", "Date", "Amount", "Name", "PaymentType", "Course", "Deposit Date", "Memo"));
             ) {
         		for(Register r: registerList) {
         			String name = r.getFirstName() + " " + r.getLastName();
+        			Integer amount = r.getHours() * r.getPrice() - r.getCredit();
         			String memo = "Quanlity:"+r.getHours()+", Price:"+r.getPrice()+
         					", Credit:"+r.getCredit()+", Memo:"+r.getMemo();
         			csvPrinter.printRecord(r.getId(), 
-        					RegisterUtilities.convertDateToString(r.getDate()),
-        					name, r.getPaymentType(), r.getCourse(), memo);	
+        					RegisterUtilities.convertDateToString(r.getDate()), amount.toString(), 
+        					name, r.getPaymentType(), r.getCourse(), 
+        					RegisterUtilities.convertDateToString(new Date()), memo);	
 	
         		}
                 csvPrinter.flush();    
