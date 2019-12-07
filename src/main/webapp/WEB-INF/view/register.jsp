@@ -40,13 +40,22 @@ var jQuery_1_12_4 = $.noConflict(true);
                       { "sName": "Date" },
                       { "sName": "First Name" },
                       { "sName": "Last Name" },
+                      { "sName": "Hours" },
+                      { "sName": "Price" },
+                      { "sName": "Credit" },
                       { "sName": "Course" },
-                      { "sName": "Amount" },
-                      { "sName": "Payment Type" }
+                      { "sName": "Payment" },
+                      { "sName": "Memo" }
                      ]
          }).makeEditable({
      	    "aoColumns": [
                 null,
+                {
+                    cssclass: "required"
+                },
+                {
+                    cssclass: "required"
+                },
                 {
                     cssclass: "required"
                 },
@@ -68,7 +77,10 @@ var jQuery_1_12_4 = $.noConflict(true);
                     loadtext: 'loading...',
                     type: 'select',
                     onblur: 'submit',
-                    data: '{"email":"email","cash":"cash","other": "other"}'
+                    data: '{"email":"email","cash":"cash","cheque":"cheque", "card":"card", "others": "other"}'
+                },
+                {
+                    cssclass: "required"
                 },
             ]
         });
@@ -114,9 +126,12 @@ var jQuery_1_12_4 = $.noConflict(true);
 							<th>Date</th>
 							<th>First Name</th>
 							<th>Last Name</th>
-							<th>Amount</th>
+							<th>Number</th>
+							<th>Price</th>
+							<th>Credit</th>
 							<th>Course</th>
 							<th>Payment</th>
+							<th>Memo</th>
 		                </tr>
 		            </thead>
 		            <tbody>		          
@@ -133,15 +148,23 @@ var jQuery_1_12_4 = $.noConflict(true);
 			    <br />
 			    <label for="name">Last Name</label><input type="text" name="lastName" id="lastName" class="required" />
 			    <br />         
-			    <label for="name">Amount</label><input type="text" name="amount" id="amount" class="required" />
+			    <label for="name">Hours</label><input type="text" name="hours" id="hours" class="required" />
+			    <br />
+			    <label for="name">Price</label><input type="text" name="price" id="price" class="required" />
+			    <br />
+			    <label for="name">Credit</label><input type="text" name="credit" id="credit" class="required" />
 			    <br />
 			    <label for="name">Course</label><input type="text" name="course" id="course" class="required" />
 			    <br />
 			    <label for="name">Payment Type</label><select name="paymentType" id="paymentType">
 			                                        <option value="1">email</option>
 			                                        <option value="2">cash</option>
-			                                        <option value="3">others</option>
+			                                        <option value="3">cheque</option>
+			                                        <option value="4">card</option>
+			                                        <option value="5">others</option>
 			                                        </select>   
+			    <br />
+			    <label for="name">Memo</label><input type="text" name="memo" id="memo" class="required" />
 			    <br />
 			</form>
 

@@ -22,16 +22,43 @@ public class Register {
     
     private String firstName;	
     private String lastName;
-    private Double amount;
+    private Integer hours;
+    private Integer price;
+    private Integer credit;
     private String course;	
     private String paymentType;	
+    private String memo;
 	
-	public Double getAmount() {
-		return amount;
+	public String getMemo() {
+		return memo;
 	}
 
-	public void setAmount(Double amount) {
-		this.amount = amount;
+	public void setMemo(String memo) {
+		this.memo = memo;
+	}
+
+	public Integer getHours() {
+		return hours;
+	}
+
+	public void setHours(Integer hours) {
+		this.hours = hours;
+	}
+
+	public Integer getPrice() {
+		return price;
+	}
+
+	public void setPrice(Integer price) {
+		this.price = price;
+	}
+
+	public Integer getCredit() {
+		return credit;
+	}
+
+	public void setCredit(Integer credit) {
+		this.credit = credit;
 	}
 
 	public Long getId() {
@@ -82,19 +109,23 @@ public class Register {
 		this.paymentType = paymentType;
 	}
 
-	public Register(Date date, String firstName, String lastName, Double amount, String course, String paymentType) {
+	public Register() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Register(Date date, String firstName, String lastName, Integer hours, Integer price, Integer credit,
+			String course, String paymentType, String memo) {
 		super();
 		this.date = date;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.amount = amount;
+		this.hours = hours;
+		this.price = price;
+		this.credit = credit;
 		this.course = course;
 		this.paymentType = paymentType;
-	}
-
-	public Register() {
-		super();
-		// TODO Auto-generated constructor stub
+		this.memo = memo;
 	}
 	
 }

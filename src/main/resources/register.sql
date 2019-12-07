@@ -1,1 +1,0 @@
-CREATE TABLE register(id long primary key auto_increment, data Date, first_name varchar, last_name varchar, amount number, course varchar, payment_type varchar)

@@ -1,10 +1,8 @@
 package com.spidersmart.register.controller;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,14 +10,10 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -76,13 +70,22 @@ public class RegisterController {
 				r.getLastName().toLowerCase().contains(param.sSearchKeyword.toLowerCase())
 				||
 				param.bSearchable[4] &&
-				Double.toString(r.getAmount()).contains(param.sSearchKeyword.toLowerCase())
+				Integer.toString(r.getHours()).contains(param.sSearchKeyword.toLowerCase())
 				||
 				param.bSearchable[5] &&
-				r.getCourse().toLowerCase().contains(param.sSearchKeyword.toLowerCase())
+				Integer.toString(r.getPrice()).contains(param.sSearchKeyword.toLowerCase())
 				||
 				param.bSearchable[6] &&
+				Integer.toString(r.getCredit()).contains(param.sSearchKeyword.toLowerCase())
+				||
+				param.bSearchable[8] &&
+				r.getCourse().toLowerCase().contains(param.sSearchKeyword.toLowerCase())
+				||
+				param.bSearchable[9] &&
 				r.getPaymentType().toLowerCase().contains(param.sSearchKeyword.toLowerCase())
+				||
+				param.bSearchable[10] &&
+				r.getMemo().toLowerCase().contains(param.sSearchKeyword.toLowerCase())
 			)
 				{
 					registers.add(r); // Add a company that matches search criterion
@@ -115,15 +118,27 @@ public class RegisterController {
 											(param.sSortDir[i].equals("asc") ? -1 : 1);
 								break;
 							case 4:
-								result = c1.getAmount().compareTo(c2.getAmount()) *
+								result = c1.getHours().compareTo(c2.getHours()) *
 											(param.sSortDir[i].equals("asc") ? -1 : 1);
 								break;
 							case 5:
-								result = c1.getCourse().compareToIgnoreCase(c2.getCourse()) *
+								result = c1.getPrice().compareTo(c2.getPrice()) *
 											(param.sSortDir[i].equals("asc") ? -1 : 1);
 								break;
 							case 6:
+								result = c1.getCredit().compareTo(c2.getCredit()) *
+											(param.sSortDir[i].equals("asc") ? -1 : 1);
+								break;
+							case 7:
+								result = c1.getCourse().compareToIgnoreCase(c2.getCourse()) *
+											(param.sSortDir[i].equals("asc") ? -1 : 1);
+								break;
+							case 8:
 								result = c1.getPaymentType().compareToIgnoreCase(c2.getPaymentType()) *
+											(param.sSortDir[i].equals("asc") ? -1 : 1);
+								break;
+							case 9:
+								result = c1.getMemo().compareToIgnoreCase(c2.getMemo()) *
 											(param.sSortDir[i].equals("asc") ? -1 : 1);
 								break;
 						}
@@ -152,9 +167,12 @@ public class RegisterController {
 			arr[firstIndex][index++] = RegisterUtilities.convertDateToString(c.getDate());
 			arr[firstIndex][index++] = c.getFirstName();
 			arr[firstIndex][index++] = c.getLastName();
-			arr[firstIndex][index++] = Double.toString(c.getAmount());
+			arr[firstIndex][index++] = Integer.toString(c.getHours());
+			arr[firstIndex][index++] = Integer.toString(c.getPrice());
+			arr[firstIndex][index++] = Integer.toString(c.getCredit());
 			arr[firstIndex][index++] = c.getCourse();
 			arr[firstIndex][index++] = c.getPaymentType();
+			arr[firstIndex][index++] = c.getMemo();
 			firstIndex++;
         }
         ret.setAaData(arr);
@@ -178,8 +196,12 @@ public class RegisterController {
 		
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
-		Double amount = Double.valueOf(request.getParameter("amount"));
+		Integer hours = Integer.valueOf(request.getParameter("hours"));
+		Integer price = Integer.valueOf(request.getParameter("price"));
+		Integer credit = Integer.valueOf(request.getParameter("credit"));
+		//Integer amount = Integer.valueOf(request.getParameter("amount"));
 		String course = request.getParameter("course");
+		String memo = request.getParameter("memo");
 		String paymentType = request.getParameter("paymentType");
 		switch (paymentType) {
 			case "1":
@@ -189,10 +211,16 @@ public class RegisterController {
 				paymentType = "cash";
 				break;
 			case "3":
+				paymentType = "cheque";
+				break;
+			case "4":
+				paymentType = "card";
+				break;
+			case "5":
 				paymentType = "other";
 				break;
 		}
-		Register c = new Register(date, firstName ,lastName, amount, course, paymentType);
+		Register c = new Register(date, firstName ,lastName, hours, price, credit, course, paymentType, memo);
 		repository.save(c);
 		return;
 	}
@@ -214,7 +242,13 @@ public class RegisterController {
 		    sheet.getRow(2+i).getCell(5).setCellValue(RegisterUtilities.convertDateToString(register.get().getDate()));
 		    sheet.getRow(3+i).getCell(5).setCellValue(register.get().getId());
 		    sheet.getRow(4+i).getCell(3).setCellValue(register.get().getFirstName()+" "+register.get().getLastName());
-		    sheet.getRow(6+i).getCell(4).setCellValue(register.get().getAmount());
+		    sheet.getRow(6+i).getCell(0).setCellValue(register.get().getCourse());
+		    sheet.getRow(6+i).getCell(1).setCellValue(register.get().getHours());
+		    sheet.getRow(6+i).getCell(2).setCellValue(register.get().getPrice());
+		    sheet.getRow(6+i).getCell(3).setCellValue(register.get().getCredit());
+		    sheet.getRow(6+i).getCell(4).setCellValue(register.get().getHours() * register.get().getPrice() - register.get().getCredit());
+		    sheet.getRow(10+i).getCell(4).setCellValue(register.get().getHours() * register.get().getPrice() - register.get().getCredit());
+		    sheet.getRow(6+i).getCell(5).setCellValue(register.get().getMemo());		    
 		    sheet.getRow(10+i).getCell(1).setCellValue(register.get().getPaymentType());
 	    }
 	    
@@ -258,14 +292,23 @@ public class RegisterController {
 	                    register.setLastName(value);
 	                    break;
 	                case 4:
-	                    register.setAmount(Double.valueOf(value));
-	                    break;
+	                	register.setHours(Integer.valueOf(value));
+	                	break;
 	                case 5:
+	                	register.setPrice(Integer.valueOf(value));
+	                	break;
+	                case 6:
+	                	register.setCredit(Integer.valueOf(value));
+	                	break;
+	                case 7:
 	                    register.setCourse(value);
 	                    break;
-	                case 6:
+	                case 8:
 	                    register.setPaymentType(value);
 	                    break;
+	                case 0:
+	                	register.setMemo(value);
+	                	break;	                	
 	                default:
 	                    break;
 	            }
