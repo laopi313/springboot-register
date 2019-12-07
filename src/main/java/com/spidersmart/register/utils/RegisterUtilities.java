@@ -14,4 +14,9 @@ public final class RegisterUtilities {
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 		return sdf.parse(date);
 	}	
+	
+	public static String getTodayString() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		return sdf.format(new Date());
+	}
 }

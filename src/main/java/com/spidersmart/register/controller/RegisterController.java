@@ -1,9 +1,13 @@
 package com.spidersmart.register.controller;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -12,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -228,6 +234,34 @@ public class RegisterController {
 	@PostMapping("/register")
 	public Register newRegister(@RequestBody Register register) {
 		return repository.save(register);
+	}
+
+	@GetMapping("/PrintIncome")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void printIncome() throws EncryptedDocumentException, InvalidFormatException, IOException {
+		
+		List<Register> registerList = repository.findAll();
+		String fileName = "c://tmp//income"+RegisterUtilities.getTodayString()+".csv";
+
+        try (
+                BufferedWriter writer = Files.newBufferedWriter(Paths.get(fileName));
+
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
+                        .withHeader("ID", "Date", "Name", "PaymentType", "Course", "Memo"));
+            ) {
+        		for(Register r: registerList) {
+        			String name = r.getFirstName() + " " + r.getLastName();
+        			String memo = "Quanlity:"+r.getHours()+", Price:"+r.getPrice()+
+        					", Credit:"+r.getCredit()+", Memo:"+r.getMemo();
+        			csvPrinter.printRecord(r.getId(), 
+        					RegisterUtilities.convertDateToString(r.getDate()),
+        					name, r.getPaymentType(), r.getCourse(), memo);	
+	
+        		}
+                csvPrinter.flush();    
+            }
+	        
+		return;
 	}
 	
 	@GetMapping("/PrintData/{id}")
